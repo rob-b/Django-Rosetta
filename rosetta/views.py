@@ -27,6 +27,11 @@ else:
     LOGIN_URL = settings.LOGIN_URL
         
 
+def get_mofile(fn):
+    root, ext = os.path.splitext(fn)
+    return str(root + '.mo')
+
+
 def home(request):
     """
     Displays a list of messages to be translated
@@ -99,7 +104,7 @@ def home(request):
                     pass
                 try:
                     rosetta_i18n_pofile.save()
-                    rosetta_i18n_pofile.save_as_mofile(rosetta_i18n_fn.replace('.po','.mo'))
+                    rosetta_i18n_pofile.save_as_mofile(get_mofile(rosetta_i18n_fn))
                     
                     # Try auto-reloading via the WSGI daemon mode reload mechanism
                     if  rosetta_settings.WSGI_AUTO_RELOAD and \
@@ -208,7 +213,7 @@ def download_file(request):
         else:
             offered_fn = rosetta_i18n_fn.split('/')[-1]
         po_fn = str(rosetta_i18n_fn.split('/')[-1])
-        mo_fn = str(po_fn.replace('.po','.mo')) # not so smart, huh
+        mo_fn = get_mofile(po_fn)
         zipdata = StringIO()
         zipf = zipfile.ZipFile(zipdata, mode="w")
         zipf.writestr(po_fn, str(rosetta_i18n_pofile))
